@@ -53,7 +53,7 @@
             padding: 10px 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             position: relative;
             page-break-inside: avoid;
             break-inside: avoid;
@@ -159,41 +159,22 @@
 
         .bottom-info {
             display: flex;
-            align-items: stretch;
-            gap: 10px;
-            flex: 1;
-            min-height: 70px;
-        }
-
-        .left-fields {
-            flex: 1;
-            display: flex;
             flex-direction: column;
-            justify-content: space-between;
             gap: 4px;
-            min-width: 0;
+            width: 100%;
         }
 
-        .field-row {
+        .field-row-full {
+            width: 100%;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 2px;
+            min-height: 24px;
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 15px;
-            padding-bottom: 2px;
-            border-bottom: 1px solid #cbd5e1;
-            min-height: 24px;
         }
 
-        .field-row label {
-            font-weight: bold;
-            color: #475569;
-            flex-shrink: 0;
-            font-size: 15px;
-            width: 45px;
-            text-align: left;
-        }
-
-        .field-row input {
+        .field-row-full input {
+            width: 100%;
             border: none;
             background: transparent;
             padding: 0;
@@ -202,9 +183,37 @@
             color: #0f172a;
             font-family: inherit;
             outline: none;
-            width: 100%;
-            min-width: 0;
             text-align: center;
+        }
+
+        .field-row-duo {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .field-row-duo .duo-field {
+            flex: 1;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 2px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .field-row-duo .duo-field input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 0;
+            font-size: 15px;
+            font-weight: bold;
+            color: #0f172a;
+            font-family: inherit;
+            outline: none;
+            text-align: center;
+            min-width: 0;
         }
 
         .price-input {
@@ -213,9 +222,9 @@
         }
 
         .qr-area {
+            display: none;
+            /* 編集画面では非表示 */
             flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             width: 70px;
@@ -264,14 +273,14 @@
 
         .btn {
             flex: 1;
-            min-width: 100px;
-            padding: 12px;
+            min-width: 80px;
+            padding: 10px 8px;
             border: none;
             border-radius: 6px;
             background-color: #2563eb;
             color: white;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             text-align: center;
             font-family: inherit;
@@ -280,7 +289,9 @@
         .btn-secondary {
             background-color: #10b981;
         }
-
+        .btn-info {
+            background-color: #8b5cf6;
+        }
         .btn-danger {
             background-color: #ef4444;
         }
@@ -364,29 +375,24 @@
             }
 
             .bottom-info {
-                gap: 4px;
-                min-height: 55px;
+                gap: 3px;
             }
 
-            .field-row {
+            .field-row-full,
+            .field-row-duo .duo-field {
                 font-size: 12px;
-                gap: 2px;
-                padding-bottom: 1px;
-                border-bottom: 1px solid #cbd5e1;
                 min-height: 20px;
+                border-bottom: 1px solid #cbd5e1;
             }
 
-            .field-row label {
-                font-size: 12px;
-                width: 38px;
-            }
-
-            .field-row input {
+            .field-row-full input,
+            .field-row-duo .duo-field input {
                 font-size: 12px;
                 text-align: center;
             }
 
             .qr-area {
+                display: flex !important;
                 width: 50px;
             }
 
@@ -411,6 +417,9 @@
             .url-edit {
                 display: flex;
             }
+            .qr-area {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -418,8 +427,9 @@
     <div class="app-container" id="appContainer">
         <div class="card-grid" id="cardGrid"></div>
         <div class="no-print">
-            <button class="btn btn-secondary" onclick="addProduct()">＋ 商品を追加</button>
-            <button class="btn" onclick="window.print()">印刷 / PDF保存</button>
+            <button class="btn btn-secondary" onclick="addProduct()">＋ 追加</button>
+            <button class="btn btn-info" onclick="saveAllToMemo()">📝 メモ保存</button>
+            <button class="btn" onclick="window.print()">🖨️ 印刷</button>
             <button class="btn btn-danger" onclick="resetAll()">リセット</button>
         </div>
     </div>
@@ -428,7 +438,7 @@
         (function() {
             let products = [];
             const MAX_PRODUCTS = 6;
-            const STORAGE_KEY = 'item_management_data_v4';
+            const STORAGE_KEY = 'item_management_data_v5';
 
             function generateId() {
                 return 'p' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -458,10 +468,10 @@
 
             function getDefaultProducts() {
                 const defaults = [
-                    { title: 'エレコム USB Type-C ケーブル 2m L字 ホワイト', memo: 'USB-C to USB-C | 60W PD対応 | ナイロンメッシュ | MPA-CCECL20WH', price: '1,030円', store: 'Amazon', date: '2026-08-31', url: 'https://amzn.asia/d/05mPK5Q5', photo: null },
-                    { title: 'Anker PowerPort III 65W', memo: 'USB-C PD 65W | GaN搭載 | 折りたたみプラグ', price: '4,980円', store: 'ヨドバシカメラ', date: '2026-09-01', url: 'https://amzn.asia/d/example1', photo: null },
-                    { title: '無印良品 ステンレスボトル 500ml', memo: '保温・保冷 | ワンタッチオープン | 食洗機対応', price: '1,490円', store: '無印良品', date: '2026-08-28', url: 'https://amzn.asia/d/example2', photo: null },
-                    { title: 'Logicool MX Master 3S', memo: '静音クリック | 8K DPI | MagSpeedスクロール', price: '12,800円', store: 'Amazon', date: '2026-08-25', url: 'https://amzn.asia/d/example3', photo: null },
+                    { title: 'エレコム USB Type-C ケーブル 2m L字 ホワイト', memo: 'USB-C to USB-C | 60W PD対応', price: '1,030円', store: 'Amazon', date: '2026-08-31', url: 'https://amzn.asia/d/05mPK5Q5', photo: null },
+                    { title: 'Anker PowerPort III 65W', memo: 'USB-C PD 65W | GaN搭載', price: '4,980円', store: 'ヨドバシカメラ', date: '2026-09-01', url: 'https://amzn.asia/d/example1', photo: null },
+                    { title: '無印良品 ステンレスボトル 500ml', memo: '保温・保冷 | ワンタッチオープン', price: '1,490円', store: '無印良品', date: '2026-08-28', url: 'https://amzn.asia/d/example2', photo: null },
+                    { title: 'Logicool MX Master 3S', memo: '静音クリック | 8K DPI', price: '12,800円', store: 'Amazon', date: '2026-08-25', url: 'https://amzn.asia/d/example3', photo: null },
                 ];
                 return defaults;
             }
@@ -542,25 +552,19 @@
                     autoResizeMemo(memoTextarea);
                     saveToStorage();
                 });
-                // 初期表示時にも自動調整
                 setTimeout(() => autoResizeMemo(memoTextarea), 0);
 
                 const bottomInfo = document.createElement('div');
                 bottomInfo.className = 'bottom-info';
 
-                const leftFields = document.createElement('div');
-                leftFields.className = 'left-fields';
-
-                // 価格行
+                // 価格行（全幅）
                 const priceRow = document.createElement('div');
-                priceRow.className = 'field-row';
-                const priceLabel = document.createElement('label');
-                priceLabel.textContent = '価格';
+                priceRow.className = 'field-row-full';
                 const priceInput = document.createElement('input');
                 priceInput.type = 'text';
                 priceInput.className = 'price-input';
                 priceInput.value = prod.price || '';
-                priceInput.placeholder = '0';
+                priceInput.placeholder = '価格';
                 priceInput.addEventListener('focus', (e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, '');
                 });
@@ -578,30 +582,26 @@
                 priceInput.addEventListener('input', (e) => {
                     prod.price = e.target.value;
                 });
-                priceRow.appendChild(priceLabel);
                 priceRow.appendChild(priceInput);
 
-                // 店舗行
-                const storeRow = document.createElement('div');
-                storeRow.className = 'field-row';
-                const storeLabel = document.createElement('label');
-                storeLabel.textContent = '店舗';
+                // 店舗＋日付行（2分割）
+                const duoRow = document.createElement('div');
+                duoRow.className = 'field-row-duo';
+
+                const storeField = document.createElement('div');
+                storeField.className = 'duo-field';
                 const storeInput = document.createElement('input');
                 storeInput.type = 'text';
                 storeInput.value = prod.store || '';
-                storeInput.placeholder = '店舗名';
+                storeInput.placeholder = '店舗';
                 storeInput.addEventListener('input', () => {
                     prod.store = storeInput.value;
                     saveToStorage();
                 });
-                storeRow.appendChild(storeLabel);
-                storeRow.appendChild(storeInput);
+                storeField.appendChild(storeInput);
 
-                // 日付行
-                const dateRow = document.createElement('div');
-                dateRow.className = 'field-row';
-                const dateLabel = document.createElement('label');
-                dateLabel.textContent = '日付';
+                const dateField = document.createElement('div');
+                dateField.className = 'duo-field';
                 const dateInput = document.createElement('input');
                 dateInput.type = 'date';
                 dateInput.value = prod.date || '';
@@ -610,20 +610,20 @@
                     prod.date = dateInput.value;
                     saveToStorage();
                 });
-                dateRow.appendChild(dateLabel);
-                dateRow.appendChild(dateInput);
+                dateField.appendChild(dateInput);
 
-                leftFields.appendChild(priceRow);
-                leftFields.appendChild(storeRow);
-                leftFields.appendChild(dateRow);
+                duoRow.appendChild(storeField);
+                duoRow.appendChild(dateField);
 
+                bottomInfo.appendChild(priceRow);
+                bottomInfo.appendChild(duoRow);
+
+                // QR（印刷時のみ表示）
                 const qrArea = document.createElement('div');
                 qrArea.className = 'qr-area';
                 const qrContainer = document.createElement('div');
                 qrContainer.className = 'qr-code-container';
                 qrArea.appendChild(qrContainer);
-
-                bottomInfo.appendChild(leftFields);
                 bottomInfo.appendChild(qrArea);
 
                 const urlEdit = document.createElement('div');
@@ -651,13 +651,10 @@
             }
 
             function autoResizeMemo(textarea) {
-                textarea.style.height = 'auto';
                 textarea.style.height = '24px';
-                // フォントサイズを自動調整
-                const maxFontSize = 12; // 初期
-                const minFontSize = 9;
+                const maxFontSize = 12;
+                const minFontSize = 8;
                 textarea.style.fontSize = maxFontSize + 'px';
-                // テキストが収まるまで縮小
                 while (textarea.scrollWidth > textarea.clientWidth && parseInt(textarea.style.fontSize) > minFontSize) {
                     let current = parseInt(textarea.style.fontSize);
                     textarea.style.fontSize = (current - 1) + 'px';
@@ -690,7 +687,6 @@
                 reader.onload = function(e) {
                     const img = new Image();
                     img.onload = function() {
-                        // リサイズ＆圧縮
                         const canvas = document.createElement('canvas');
                         const maxSize = 500;
                         let width = img.width;
@@ -709,7 +705,6 @@
                         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                         prod.photo = compressedDataUrl;
                         saveToStorage();
-                        // UI更新
                         const imgElement = photoArea.querySelector('img');
                         const placeholderEl = photoArea.querySelector('.photo-placeholder');
                         if (imgElement && placeholderEl) {
@@ -772,12 +767,65 @@
                 }
             }
 
+            // ===== メモ保存機能 =====
+            async function saveAllToMemo() {
+                if (products.length === 0) {
+                    alert('保存する商品がありません。');
+                    return;
+                }
+
+                const memos = [];
+                for (const prod of products) {
+                    let text = '';
+                    if (prod.title) text += `📦 ${prod.title}\n`;
+                    if (prod.price) text += `💰 ${prod.price}\n`;
+                    if (prod.store) text += `🏪 ${prod.store}\n`;
+                    if (prod.date) text += `📅 ${prod.date}\n`;
+                    if (prod.memo) text += `📝 ${prod.memo}\n`;
+                    if (prod.url) text += `🔗 ${prod.url}\n`;
+                    if (prod.photo) text += `\n[写真添付]\n`;
+                    memos.push({ text, photo: prod.photo, title: prod.title || '商品' });
+                }
+
+                for (const memo of memos) {
+                    try {
+                        if (navigator.share) {
+                            const shareData = {
+                                title: memo.title,
+                                text: memo.text,
+                            };
+                            if (memo.photo) {
+                                // 写真をBlobに変換してシェア
+                                const blob = await (await fetch(memo.photo)).blob();
+                                const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                                shareData.files = [file];
+                            }
+                            await navigator.share(shareData);
+                            // 少し待ってから次のシェアへ
+                            await new Promise(r => setTimeout(r, 800));
+                        } else {
+                            // フォールバック：テキストのみコピー
+                            await navigator.clipboard.writeText(memo.text);
+                            alert('メモ内容をクリップボードにコピーしました。\n写真は手動で保存してください。');
+                            break;
+                        }
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.warn('シェア失敗', err);
+                            alert('メモ保存が中断されました。');
+                        }
+                        break;
+                    }
+                }
+            }
+
             window.addEventListener('DOMContentLoaded', init);
             window.addEventListener('beforeprint', updateGridMode);
 
             window.addProduct = addProduct;
             window.resetAll = resetAll;
             window.removeProduct = removeProduct;
+            window.saveAllToMemo = saveAllToMemo;
         })();
     </script>
 </body>
