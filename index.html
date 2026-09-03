@@ -7,8 +7,7 @@
     <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22物品管理%22,%22short_name%22:%22物品管理%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#ffffff%22,%22theme_color%22:%22#2563eb%22}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -34,7 +33,6 @@
             gap: 12px;
         }
 
-        /* グリッド全体の枠線は撤去 */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -44,12 +42,10 @@
             border: none;
         }
 
-        /* 5個以上は3列 */
         .card-grid.mode-3col {
             grid-template-columns: repeat(3, 1fr);
         }
 
-        /* 個別カード：薄い枠線のみ */
         .item-card {
             background: #ffffff;
             border: 1px solid #d1d5db;
@@ -66,7 +62,6 @@
             min-width: 0;
         }
 
-        /* 隣接するカードの枠線を共有（重なり防止） */
         .item-card:not(:last-child) {
             border-right: none;
             border-bottom: none;
@@ -97,12 +92,11 @@
             font-weight: bold;
         }
 
-        /* 写真エリア */
         .photo-area {
             width: 100%;
             aspect-ratio: 1 / 1;
             border: 1px dashed #94a3b8;
-            border-radius: 0;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -119,6 +113,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            border-radius: 12px;
         }
 
         .photo-placeholder {
@@ -130,7 +125,6 @@
             user-select: none;
         }
 
-        /* タイトル（写真の下） */
         .item-title {
             font-size: 16px;
             font-weight: bold;
@@ -145,29 +139,30 @@
             text-align: left;
         }
 
-        /* 備考 */
         .item-memo {
             width: 100%;
             border: none;
             border-bottom: 1px solid #cbd5e1;
             background: transparent;
             padding: 2px 0;
-            font-size: 14px;
+            font-size: 12px;
             color: #0f172a;
             font-family: inherit;
             resize: none;
-            height: 40px;
+            height: 24px;
             outline: none;
-            line-height: 1.3;
+            line-height: 1.2;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        /* 下部情報：左フィールド＋QR */
         .bottom-info {
             display: flex;
             align-items: stretch;
             gap: 10px;
             flex: 1;
-            min-height: 80px;
+            min-height: 70px;
         }
 
         .left-fields {
@@ -181,9 +176,12 @@
 
         .field-row {
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 4px;
             font-size: 15px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #cbd5e1;
+            min-height: 24px;
         }
 
         .field-row label {
@@ -191,13 +189,14 @@
             color: #475569;
             flex-shrink: 0;
             font-size: 15px;
+            width: 45px;
+            text-align: left;
         }
 
         .field-row input {
             border: none;
-            border-bottom: 1px solid #cbd5e1;
             background: transparent;
-            padding: 2px 0;
+            padding: 0;
             font-size: 15px;
             font-weight: bold;
             color: #0f172a;
@@ -205,15 +204,7 @@
             outline: none;
             width: 100%;
             min-width: 0;
-            text-align: left;
-        }
-
-        /* 日付は絶対左寄せ */
-        .field-row input[type="date"] {
-            text-align: left !important;
-            direction: ltr;
-            -webkit-appearance: none;
-            appearance: none;
+            text-align: center;
         }
 
         .price-input {
@@ -221,7 +212,6 @@
             font-weight: bold !important;
         }
 
-        /* QRエリア */
         .qr-area {
             flex-shrink: 0;
             display: flex;
@@ -239,12 +229,11 @@
         }
 
         .qr-code-container img {
-            width: 65px !important;
-            height: 65px !important;
+            width: 60px !important;
+            height: 60px !important;
             max-width: 100%;
         }
 
-        /* URL編集（画面のみ） */
         .url-edit {
             display: flex;
             align-items: center;
@@ -296,7 +285,6 @@
             background-color: #ef4444;
         }
 
-        /* 印刷時 */
         @media print {
             @page {
                 size: A5 portrait;
@@ -335,9 +323,8 @@
             .item-card {
                 border: 1px solid #d1d5db;
                 border-radius: 0;
-                padding: 8px 6px;
-                gap: 6px;
-                break-inside: avoid;
+                padding: 6px 5px;
+                gap: 5px;
             }
 
             .item-card:not(:last-child) {
@@ -350,52 +337,62 @@
             }
 
             .item-title {
-                font-size: 15px;
+                font-size: 14px;
                 border-bottom-width: 1.5px;
                 padding-bottom: 2px;
             }
 
             .photo-area {
                 border: 1px solid #999;
+                border-radius: 8px;
+            }
+
+            .photo-area img {
+                border-radius: 8px;
             }
 
             .photo-placeholder {
-                font-size: 14px;
+                font-size: 12px;
             }
 
             .item-memo {
-                font-size: 13px;
-                height: 32px;
+                font-size: 10px;
+                height: 20px;
                 border-bottom: 1px solid #cbd5e1;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             .bottom-info {
-                gap: 6px;
-                min-height: 60px;
+                gap: 4px;
+                min-height: 55px;
             }
 
             .field-row {
-                font-size: 13px;
+                font-size: 12px;
                 gap: 2px;
+                padding-bottom: 1px;
+                border-bottom: 1px solid #cbd5e1;
+                min-height: 20px;
             }
 
             .field-row label {
-                font-size: 13px;
+                font-size: 12px;
+                width: 38px;
             }
 
             .field-row input {
-                font-size: 13px;
-                padding: 1px 0;
-                border-bottom: 1px solid #cbd5e1;
+                font-size: 12px;
+                text-align: center;
             }
 
             .qr-area {
-                width: 55px;
+                width: 50px;
             }
 
             .qr-code-container img {
-                width: 50px !important;
-                height: 50px !important;
+                width: 45px !important;
+                height: 45px !important;
             }
 
             .card-grid {
@@ -429,16 +426,14 @@
 
     <script>
         (function() {
-            // ===== データ管理 =====
             let products = [];
             const MAX_PRODUCTS = 6;
-            const STORAGE_KEY = 'item_management_data_v3';
+            const STORAGE_KEY = 'item_management_data_v4';
 
             function generateId() {
                 return 'p' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
             }
 
-            // ===== ローカルストレージ =====
             function saveToStorage() {
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
@@ -461,7 +456,6 @@
                 }
             }
 
-            // ===== デフォルト商品 =====
             function getDefaultProducts() {
                 const defaults = [
                     { title: 'エレコム USB Type-C ケーブル 2m L字 ホワイト', memo: 'USB-C to USB-C | 60W PD対応 | ナイロンメッシュ | MPA-CCECL20WH', price: '1,030円', store: 'Amazon', date: '2026-08-31', url: 'https://amzn.asia/d/05mPK5Q5', photo: null },
@@ -482,12 +476,11 @@
                 updateGridMode();
             }
 
-            // ===== 描画 =====
             function renderAllCards() {
                 const grid = document.getElementById('cardGrid');
                 grid.innerHTML = '';
-                products.forEach((prod, index) => {
-                    grid.appendChild(createCardElement(prod, index));
+                products.forEach(prod => {
+                    grid.appendChild(createCardElement(prod));
                 });
             }
 
@@ -496,7 +489,6 @@
                 card.className = 'item-card';
                 card.dataset.productId = prod.id;
 
-                // 削除ボタン
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-btn';
                 removeBtn.textContent = '×';
@@ -506,7 +498,6 @@
                     removeProduct(prod.id);
                 });
 
-                // 写真エリア
                 const photoArea = document.createElement('div');
                 photoArea.className = 'photo-area';
                 const fileInput = document.createElement('input');
@@ -531,7 +522,6 @@
                 photoArea.appendChild(fileInput);
                 photoArea.addEventListener('click', () => fileInput.click());
 
-                // タイトル（写真の下）
                 const titleInput = document.createElement('input');
                 titleInput.type = 'text';
                 titleInput.className = 'item-title';
@@ -542,25 +532,26 @@
                     saveToStorage();
                 });
 
-                // メモ
                 const memoTextarea = document.createElement('textarea');
                 memoTextarea.className = 'item-memo';
-                memoTextarea.rows = 2;
+                memoTextarea.rows = 1;
                 memoTextarea.value = prod.memo || '';
                 memoTextarea.placeholder = '備考';
                 memoTextarea.addEventListener('input', () => {
                     prod.memo = memoTextarea.value;
+                    autoResizeMemo(memoTextarea);
                     saveToStorage();
                 });
+                // 初期表示時にも自動調整
+                setTimeout(() => autoResizeMemo(memoTextarea), 0);
 
-                // 下部情報
                 const bottomInfo = document.createElement('div');
                 bottomInfo.className = 'bottom-info';
 
                 const leftFields = document.createElement('div');
                 leftFields.className = 'left-fields';
 
-                // 価格
+                // 価格行
                 const priceRow = document.createElement('div');
                 priceRow.className = 'field-row';
                 const priceLabel = document.createElement('label');
@@ -590,15 +581,15 @@
                 priceRow.appendChild(priceLabel);
                 priceRow.appendChild(priceInput);
 
-                // 購入店
+                // 店舗行
                 const storeRow = document.createElement('div');
                 storeRow.className = 'field-row';
                 const storeLabel = document.createElement('label');
-                storeLabel.textContent = '購入店';
+                storeLabel.textContent = '店舗';
                 const storeInput = document.createElement('input');
                 storeInput.type = 'text';
                 storeInput.value = prod.store || '';
-                storeInput.placeholder = '店名';
+                storeInput.placeholder = '店舗名';
                 storeInput.addEventListener('input', () => {
                     prod.store = storeInput.value;
                     saveToStorage();
@@ -606,7 +597,7 @@
                 storeRow.appendChild(storeLabel);
                 storeRow.appendChild(storeInput);
 
-                // 日付
+                // 日付行
                 const dateRow = document.createElement('div');
                 dateRow.className = 'field-row';
                 const dateLabel = document.createElement('label');
@@ -614,7 +605,7 @@
                 const dateInput = document.createElement('input');
                 dateInput.type = 'date';
                 dateInput.value = prod.date || '';
-                dateInput.style.textAlign = 'left';
+                dateInput.style.textAlign = 'center';
                 dateInput.addEventListener('input', () => {
                     prod.date = dateInput.value;
                     saveToStorage();
@@ -626,7 +617,6 @@
                 leftFields.appendChild(storeRow);
                 leftFields.appendChild(dateRow);
 
-                // QR
                 const qrArea = document.createElement('div');
                 qrArea.className = 'qr-area';
                 const qrContainer = document.createElement('div');
@@ -636,7 +626,6 @@
                 bottomInfo.appendChild(leftFields);
                 bottomInfo.appendChild(qrArea);
 
-                // URL編集
                 const urlEdit = document.createElement('div');
                 urlEdit.className = 'url-edit';
                 const urlInput = document.createElement('input');
@@ -650,7 +639,6 @@
                 });
                 urlEdit.appendChild(urlInput);
 
-                // 組み立て
                 card.appendChild(removeBtn);
                 card.appendChild(photoArea);
                 card.appendChild(titleInput);
@@ -662,14 +650,29 @@
                 return card;
             }
 
+            function autoResizeMemo(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = '24px';
+                // フォントサイズを自動調整
+                const maxFontSize = 12; // 初期
+                const minFontSize = 9;
+                textarea.style.fontSize = maxFontSize + 'px';
+                // テキストが収まるまで縮小
+                while (textarea.scrollWidth > textarea.clientWidth && parseInt(textarea.style.fontSize) > minFontSize) {
+                    let current = parseInt(textarea.style.fontSize);
+                    textarea.style.fontSize = (current - 1) + 'px';
+                }
+                textarea.style.height = '24px';
+            }
+
             function generateQRCode(container, url) {
                 container.innerHTML = '';
                 if (url) {
                     try {
                         new QRCode(container, {
                             text: url,
-                            width: 65,
-                            height: 65,
+                            width: 60,
+                            height: 60,
                             colorDark: '#0f172a',
                             colorLight: '#ffffff',
                             correctLevel: QRCode.CorrectLevel.M
@@ -685,20 +688,41 @@
                 if (!file) return;
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    prod.photo = e.target.result;
-                    const img = photoArea.querySelector('img');
-                    const placeholder = photoArea.querySelector('.photo-placeholder');
-                    if (img && placeholder) {
-                        img.src = prod.photo;
-                        img.style.display = 'block';
-                        placeholder.style.display = 'none';
-                    }
-                    saveToStorage();
+                    const img = new Image();
+                    img.onload = function() {
+                        // リサイズ＆圧縮
+                        const canvas = document.createElement('canvas');
+                        const maxSize = 500;
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > height && width > maxSize) {
+                            height = Math.round((height * maxSize) / width);
+                            width = maxSize;
+                        } else if (height > maxSize) {
+                            width = Math.round((width * maxSize) / height);
+                            height = maxSize;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        prod.photo = compressedDataUrl;
+                        saveToStorage();
+                        // UI更新
+                        const imgElement = photoArea.querySelector('img');
+                        const placeholderEl = photoArea.querySelector('.photo-placeholder');
+                        if (imgElement && placeholderEl) {
+                            imgElement.src = compressedDataUrl;
+                            imgElement.style.display = 'block';
+                            placeholderEl.style.display = 'none';
+                        }
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
 
-            // ===== 操作 =====
             function addProduct() {
                 if (products.length >= MAX_PRODUCTS) {
                     alert('最大' + MAX_PRODUCTS + '商品まで登録できます。');
@@ -748,11 +772,9 @@
                 }
             }
 
-            // ===== イベント登録 =====
             window.addEventListener('DOMContentLoaded', init);
             window.addEventListener('beforeprint', updateGridMode);
 
-            // グローバル公開
             window.addProduct = addProduct;
             window.resetAll = resetAll;
             window.removeProduct = removeProduct;
